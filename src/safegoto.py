@@ -33,7 +33,7 @@ class Robot:
         self.CURRENT_X , self.CURRENT_Y = LAST_X, LAST_Y
         self.pub = rospy.Publisher('/r1/cmd_vel', msg.Twist, latch=True, queue_size=10)
         rospy.init_node('talker', anonymous=True)
-        self.subOdom = rospy.Subscriber('/r1/odom', Odometry, self.newLocation)
+        self.subOdom = rospy.Subscriber('/r1/pose', Odometry, self.newLocation)
         self.subLaser = rospy.Subscriber('/r1/kinect_laser/scan', LaserScan, self.scan)
         self.subSonar = rospy.Subscriber('/r1/sonar', SonarArray, self.sonar)
         self.turning = False
@@ -95,14 +95,12 @@ class Robot:
         if turnRight:
             # print("\n\n\nright\n\n\n")
             angle_change = (3.14-(6.28 - self.THETA - 0.872665)) % 6.28
-            self.GOTO_X = self.CURRENT_X + (2) * cos(angle_change)
-            self.GOTO_Y = self.CURRENT_Y + (2) * sin(angle_change)
         else:
             # print("\n\n\nleft\n\n\n")
             angle_change = (3.14-(6.28 - self.THETA + 0.872665)) % 6.28
-            self.GOTO_X = self.CURRENT_X + (2) * cos(angle_change)
-            self.GOTO_Y = self.CURRENT_Y + (2) * sin(angle_change)
 
+        self.GOTO_X = self.CURRENT_X + (0.5) * cos(angle_change)
+        self.GOTO_Y = self.CURRENT_Y + (0.5) * sin(angle_change)
 
 
 
@@ -120,7 +118,7 @@ class Robot:
             ms.angular.z = 0.2 * (self.turn_left(angle_away))
             self.turning = True
         else:
-            ms.linear.x = 0.5
+            ms.linear.x = 0.2
             ms.angular.z = 0
             self.turning = False
         self.pub.publish(ms)
