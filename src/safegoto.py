@@ -32,12 +32,12 @@ class Robot:
         self.GOAL_Y = self.GOTO_Y = GOAL_Y
         self.THETA = LAST_THETA
         self.CURRENT_X , self.CURRENT_Y = LAST_X, LAST_Y
-        self.pub = rospy.Publisher('/r1/cmd_vel', msg.Twist, latch=True, queue_size=10)
+        self.pub = rospy.Publisher('/cmd_vel', msg.Twist, latch=True, queue_size=10)
         self.pub2 = rospy.Publisher('/cmd_motor_state', MotorState, latch=True)
         rospy.init_node('talker', anonymous=True)
-        self.subOdom = rospy.Subscriber('/r1/pose', Odometry, self.newLocation)
-        self.subLaser = rospy.Subscriber('/r1/kinect_laser/scan', LaserScan, self.scan)
-        self.subSonar = rospy.Subscriber('/r1/sonar', SonarArray, self.sonar)
+        self.subOdom = rospy.Subscriber('/pose', Odometry, self.newLocation)
+        self.subLaser = rospy.Subscriber('/kinect_laser/scan', LaserScan, self.scan)
+        self.subSonar = rospy.Subscriber('/sonar', SonarArray, self.sonar)
         self.turning = False
         self.init()
 
