@@ -4,7 +4,6 @@ from time import sleep
 from geometry_msgs import msg
 from math import sqrt, atan2, cos, sin
 from nav_msgs.msg import Odometry
-from sensor_msgs.msg import LaserScan
 from p2os_msgs.msg import SonarArray, MotorState
 
 LAST_X= LAST_Y = 0
@@ -21,9 +20,7 @@ class Robot:
     GOTO_X = float
     GOTO_Y = float
     subOdom = rospy.Subscriber
-    subLaser = rospy.Subscriber
     subSonar = rospy.Subscriber
-    scanInfo = list
     sonarInfo = list
     turning = bool
 
@@ -36,7 +33,6 @@ class Robot:
         self.pub2 = rospy.Publisher('/cmd_motor_state', MotorState, latch=True)
         rospy.init_node('talker', anonymous=True)
         self.subOdom = rospy.Subscriber('/pose', Odometry, self.newLocation)
-        self.subLaser = rospy.Subscriber('/kinect_laser/scan', LaserScan, self.scan)
         self.subSonar = rospy.Subscriber('/sonar', SonarArray, self.sonar)
         self.turning = False
         self.init()
@@ -71,9 +67,6 @@ class Robot:
         self.calculateGoTo()
         self.goTo()
 
-    def scan(self, msg):
-        self.scanInfo = msg.ranges
-        # print(self.scanInfo)
 
     def sonar(self, msg):
         self.sonarInfo = msg.ranges
@@ -133,10 +126,8 @@ class Robot:
 
     def close(self):
         global LAST_Y,LAST_X,LAST_THETA
-        # print(self.scanInfo, self.sonarInfo)
         LAST_Y,LAST_X,LAST_THETA = self.CURRENT_Y, self.CURRENT_X, self.THETA
         self.subOdom.unregister()
-        self.subLaser.unregister()
         self.subSonar.unregister()
 
     def __str__(self):
