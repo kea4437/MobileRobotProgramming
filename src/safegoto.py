@@ -5,13 +5,14 @@ from geometry_msgs import msg
 from math import sqrt, atan2, cos, sin
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import LaserScan
-from p2os_msgs.msg import SonarArray
+from p2os_msgs.msg import SonarArray, MotorState
 
 LAST_X= LAST_Y = 0
 LAST_THETA = 3.14
 
 class Robot:
     pub = rospy.Publisher
+    pub2 = rospy.Publisher
     CURRENT_X = float
     CURRENT_Y = float
     THETA = float
@@ -32,11 +33,18 @@ class Robot:
         self.THETA = LAST_THETA
         self.CURRENT_X , self.CURRENT_Y = LAST_X, LAST_Y
         self.pub = rospy.Publisher('/r1/cmd_vel', msg.Twist, latch=True, queue_size=10)
+        self.pub2 = rospy.Publisher('/cmd_motor_state', MotorState, latch=True)
         rospy.init_node('talker', anonymous=True)
         self.subOdom = rospy.Subscriber('/r1/pose', Odometry, self.newLocation)
         self.subLaser = rospy.Subscriber('/r1/kinect_laser/scan', LaserScan, self.scan)
         self.subSonar = rospy.Subscriber('/r1/sonar', SonarArray, self.sonar)
         self.turning = False
+        self.init()
+
+    def init(self):
+        ms = MotorState()
+        ms.state = 1
+        self.pub2.publish(ms)
 
     def distanceAway(self, x, y):
         return sqrt((self.CURRENT_X - x) ** 2 + (self.CURRENT_Y - y) ** 2)
